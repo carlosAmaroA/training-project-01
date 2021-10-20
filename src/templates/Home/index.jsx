@@ -10,8 +10,8 @@ export class Home extends Component {
     posts: [],
     allPosts: [],
     page: 0,
-    perPage: 3,
-    loaded: 3,
+    perPage: 6,
+    loaded: 6,
     searchValue: "",
   };
   timeOutUpdate = null;
