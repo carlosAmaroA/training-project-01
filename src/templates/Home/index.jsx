@@ -3,6 +3,7 @@ import { Component } from "react";
 import { loadPosts } from "../../utils/load-posts";
 import { Posts } from "../../components/Posts";
 import { Button } from "../../components/Button";
+import { TextInput } from "../../components/TextInput";
 
 export class Home extends Component {
   state = {
@@ -11,6 +12,7 @@ export class Home extends Component {
     page: 0,
     perPage: 3,
     loaded: 3,
+    searchValue: "",
   };
   timeOutUpdate = null;
   handleTimeout = () => {
@@ -37,20 +39,50 @@ export class Home extends Component {
     this.setState({ loaded: loaded + perPage });
   };
 
+  handleChange = (e) => {
+    const { value } = e.target;
+    this.setState({ searchValue: value });
+  };
+
   componentDidUpdate() {}
 
   componentWillUnmount() {}
 
   render() {
-    const { allPosts, loaded } = this.state;
+    const { allPosts, loaded, searchValue } = this.state;
+    const posts = allPosts.slice(0, loaded);
+    const filteredPosts = !!searchValue
+      ? allPosts.filter(
+          (e) =>
+            e.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+            e.body.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      : posts;
     return (
       <section className="container">
-        <Posts posts={allPosts.slice(0, loaded)} />
-        <Button
-          disabled={loaded >= allPosts.length}
-          text="Load more posts"
-          onClick={this.loadMorePosts}
-        />
+        <div class="search-container">
+          {!!searchValue && (
+            <>
+              <h1>Search Value>{searchValue}</h1>
+            </>
+          )}
+          <TextInput
+            searchValue={searchValue}
+            handleChange={this.handleChange}
+          ></TextInput>
+        </div>
+        {filteredPosts.length ? (
+          <Posts posts={filteredPosts} />
+        ) : (
+          <p>Posts dont found</p>
+        )}
+        {!searchValue && (
+          <Button
+            disabled={loaded >= allPosts.length}
+            text="Load more posts"
+            onClick={this.loadMorePosts}
+          />
+        )}
       </section>
     );
   }
